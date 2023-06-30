@@ -19,15 +19,17 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
-    # pkgs.hello
-    pkgs.vscodium
-    pkgs.fira-code
-    pkgs.git
-    pkgs.bat
-    #pkgs.papirus-icon-theme
+    # hello
+    vscodium
+    fira-code
+    git
+    bat
+    # TODO. How can I make this conditional?
+    gnomeExtensions.dash-to-dock
+    gnomeExtensions.blur-my-shell
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -43,6 +45,28 @@
     # '')
   ];
 
+  dconf.enable = true;
+  dconf.settings = {
+    # ...
+    "org/gnome/shell" = {
+      disable-user-extensions = false;
+
+      # `gnome-extensions list` for a list
+      enabled-extensions = [
+        "dash-to-dock@micxgx.gmail.com"
+        "blur-my-shell@aunetx"
+      ];
+    };
+    "org/gnome/desktop/wm/preferences" = {
+        button-layout = "appmenu:minimize,maximize,close";
+      };
+    "org/gnome/mutter" = {
+      center-new-windows = true;
+      edge-tiling = true;
+      dynamic-workspaces = true;
+    };
+  };
+
   gtk = {
     enable = true;
     
@@ -51,6 +75,14 @@
       package = pkgs.papirus-icon-theme;
     };
   };
+
+  xdg.desktopEntries."Yuzu" = {
+      exec = "appimage-run /home/calin/Applications/Yuzu.AppImage";
+      terminal = false;
+      name = "Yuzu Emulator";
+      type = "Application";
+      icon = "yuzu";
+    };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
