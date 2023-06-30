@@ -6,6 +6,7 @@
   home.username = "calin";
   home.homeDirectory = "/home/calin";
   fonts.fontconfig.enable = true;
+  targets.genericLinux.enable = true; # Enables desktop shortcuts and other stuff
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -26,6 +27,7 @@
     pkgs.fira-code
     pkgs.git
     pkgs.bat
+    #pkgs.papirus-icon-theme
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -40,6 +42,15 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  gtk = {
+    enable = true;
+    
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
