@@ -26,7 +26,9 @@
     vscodium
     fira-code
     git
+    exa
     bat
+    fish
     # TODO. How can I make this conditional?
     gnomeExtensions.dash-to-dock
     gnomeExtensions.blur-my-shell
@@ -65,6 +67,10 @@
       edge-tiling = true;
       dynamic-workspaces = true;
     };
+    # Extension settings
+    "org/gnome/shell/extensions/dash-to-dock" = {
+      dash-max-icon-size = 64;
+    };
   };
 
   gtk = {
@@ -77,12 +83,12 @@
   };
 
   xdg.desktopEntries."Yuzu" = {
-      exec = "appimage-run /home/calin/Applications/Yuzu.AppImage";
-      terminal = false;
-      name = "Yuzu Emulator";
-      type = "Application";
-      icon = "yuzu";
-    };
+    exec = "appimage-run /home/calin/Applications/Yuzu.AppImage";
+    terminal = false;
+    name = "Yuzu Emulator";
+    type = "Application";
+    icon = "yuzu";
+  };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
