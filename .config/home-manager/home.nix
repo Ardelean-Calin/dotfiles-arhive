@@ -29,6 +29,7 @@
     exa
     bat
     fish
+    neovim
     # TODO. How can I make this conditional?
     gnomeExtensions.dash-to-dock
     gnomeExtensions.blur-my-shell
@@ -79,6 +80,11 @@
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
+    };
+
+    theme = {
+      name = "adw-gtk3";
+      package = pkgs.adw-gtk3;
     };
   };
 
