@@ -1,43 +1,57 @@
 #!/usr/bin/env bash
 
+ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 NIX_ROOT="/nix"
 
 echo -e "${GREEN}Installing Nix...${NC}"
-sleep 0.5
 if [ -d "$NIX_ROOT" ]; then
   echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
-  sleep 0.5
 else
   sh <(curl -L https://nixos.org/nix/install) --no-daemon
   source $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
 echo -e "${GREEN}Installing Home-Manager...${NC}"
-sleep 0.5
 
 if home-manager --version > /dev/null 2>&1; then
   echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
-  sleep 0.5
 else
   nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
   nix-channel --update
 fi
 
-# Downloading repo
-nix-shell -p git --run "git clone --bare https://github.com/Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
+# Preparation: Get ssh keys
+echo -e "${GREEN}Getting SSH keys...${NC}"
+echo -e "${ORANGE}Please connect your Yubikey and press any key to continue${NC}"
+read ans
+ssh-add -K
+
+# Download dotfiles repo
 function config {
    nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
 }
-mkdir -p .config-backup
+
+if [ -d "$HOME/.dotfiles" ]; then
+  mv $HOME/.dotfiles $HOME/.dotfiles.backup
+fi
+nix-shell -p git --run "git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
+# Create dotfiles backup if needed
+mkdir -p $HOME/.config-backup
 config checkout
 if [ $? = 0 ]; then
   echo "Checked out config.";
   else
-    echo "Backing up pre-existing dot files.";
-    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
+    echo "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}";
+    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
 fi;
 config checkout
-config config status.showUntrackedFiles no
+config config --local status.showUntrackedFiles no
+
+# Final step, run home-manager.
+echo -e "${GREEN}Final step. Running home-manager.${NC}"
+home-manager switch
+
+echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
