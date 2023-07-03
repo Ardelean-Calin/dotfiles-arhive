@@ -3,5 +3,3 @@
 [user]
 	name = Ardelean Calin
 	email = 9417983+Ardelean-Calin@users.noreply.github.com
-[core]
-	sshCommand = "ssh -i ~/.secrets/ssh/id_ed25519 -F /dev/null"
