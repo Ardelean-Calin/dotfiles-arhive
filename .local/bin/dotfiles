@@ -1,3 +1,43 @@
 #!/usr/bin/env bash
 
-ssh-add $HOME/.secrets/ssh/id_ed25519
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+NIX_ROOT="/nix"
+
+echo -e "${GREEN}Installing Nix...${NC}"
+sleep 0.5
+if [ -d "$NIX_ROOT" ]; then
+  echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
+  sleep 0.5
+else
+  sh <(curl -L https://nixos.org/nix/install) --no-daemon
+  source $HOME/.nix-profile/etc/profile.d/nix.sh
+fi
+
+echo -e "${GREEN}Installing Home-Manager...${NC}"
+sleep 0.5
+
+if home-manager --version > /dev/null 2>&1; then
+  echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
+  sleep 0.5
+else
+  nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+  nix-channel --update
+fi
+
+# Downloading repo
+nix-shell -p git --run "git clone --bare https://github.com/Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
+function config {
+   nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
+}
+mkdir -p .config-backup
+config checkout
+if [ $? = 0 ]; then
+  echo "Checked out config.";
+  else
+    echo "Backing up pre-existing dot files.";
+    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
+fi;
+config checkout
+config config status.showUntrackedFiles no
