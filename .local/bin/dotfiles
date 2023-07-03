@@ -35,6 +35,7 @@ function config {
 }
 
 if [ -d "$HOME/.dotfiles" ]; then
+  echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
   mv $HOME/.dotfiles $HOME/.dotfiles.backup
 fi
 nix-shell -p git --run "git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
@@ -48,7 +49,8 @@ if [ $? = 0 ]; then
     config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
 fi;
 config checkout
-config config --local status.showUntrackedFiles no
+nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no"
+# config config --local status.showUntrackedFiles no
 
 # Final step, run home-manager.
 echo -e "${GREEN}Final step. Running home-manager.${NC}"
