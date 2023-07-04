@@ -27,6 +27,9 @@
     fira-code
     git
     lazygit
+    fish
+    starship
+    neofetch
     exa
     bat
     nodejs_18
@@ -41,7 +44,7 @@
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
     # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+    (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
@@ -50,22 +53,6 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-
-  programs.zsh = {
-    enable = true;
-    enableAutosuggestions = true;
-    enableCompletion = true;
-    syntaxHighlighting.enable = true;
-    shellAliases = {
-      ls = "exa";
-      config = "git --git-dir=/home/calin/.dotfiles/ --work-tree=/home/calin";
-    };
-  };
-
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-  };
 
   dconf.enable = true;
   dconf.settings = {

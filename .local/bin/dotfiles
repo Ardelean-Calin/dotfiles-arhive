@@ -61,4 +61,11 @@ echo -e "${GREEN}Final step. Running home-manager.${NC}"
 home-manager switch
 systemctl --user start syncthing.service
 
+# Install applications
+# kitty
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
+cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
+cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
+
 echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
