@@ -12,3 +12,4 @@
 
 test -s ~/.alias && . ~/.alias || true
 alias config='git --git-dir=/home/calin/.dotfiles/ --work-tree=/home/calin'
+eval "$(starship init bash)"

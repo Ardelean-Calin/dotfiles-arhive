@@ -28,7 +28,8 @@
     git
     exa
     bat
-    fish
+    starship
+    nodejs_18
     brave
     neovim
     # TODO. How can I make this conditional?
@@ -68,12 +69,6 @@
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-  };
-
-  programs.gnome-terminal.profile."MyProfile" = {
-    visibleName = "MyProfile";
-    customCommand = "fish";
-    default = true;
   };
 
   xdg.desktopEntries."Yuzu" = {
