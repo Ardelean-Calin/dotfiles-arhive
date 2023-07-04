@@ -29,6 +29,7 @@
     exa
     bat
     fish
+    brave
     neovim
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
@@ -69,8 +70,14 @@
     };
   };
 
+  programs.gnome-terminal.profile."MyProfile" = {
+    visibleName = "MyProfile";
+    customCommand = "fish";
+    default = true;
+  };
+
   xdg.desktopEntries."Yuzu" = {
-    exec = "appimage-run /home/calin/Applications/Yuzu.AppImage";
+    exec = "/home/calin/Applications/Yuzu.AppImage";
     terminal = false;
     name = "Yuzu Emulator";
     type = "Application";

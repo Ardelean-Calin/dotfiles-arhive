@@ -4,4 +4,5 @@
 	name = Ardelean Calin
 	email = 9417983+Ardelean-Calin@users.noreply.github.com
 [push]
+        default = current
 	autoSetupRemote = true
