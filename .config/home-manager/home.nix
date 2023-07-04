@@ -26,12 +26,13 @@
     vscodium
     fira-code
     git
+    lazygit
     exa
     bat
-    starship
     nodejs_18
     brave
     neovim
+    rustup
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.blur-my-shell
@@ -49,6 +50,22 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+    shellAliases = {
+      ls = "exa";
+      config = "git --git-dir=/home/calin/.dotfiles/ --work-tree=/home/calin";
+    };
+  };
+
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   dconf.enable = true;
   dconf.settings = {
