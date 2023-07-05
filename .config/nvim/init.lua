@@ -23,8 +23,8 @@ require("config.options")
 
 -- Load plugin manager
 require("lazy").setup("plugins", {
-  change_detection = { notify = false },
+  change_detection = { notify = true },
   install = {
-    colorscheme = { "tokyonight-night" },
+    -- colorscheme = { "catppuccin" },
   },
 })

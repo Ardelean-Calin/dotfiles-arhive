@@ -5,7 +5,7 @@ return {
   -- Navigation
   "andymass/vim-matchup",
   "justinmk/vim-dirvish",
-  { "folke/trouble.nvim", config = true },
+  { "folke/trouble.nvim",      config = true },
 
   -- Syntax
   "sheerun/vim-polyglot",
@@ -18,4 +18,14 @@ return {
   "tpope/vim-repeat",
   "tpope/vim-rsi",
   "tpope/vim-unimpaired",
+
+  -- Themes
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "catppuccin",
+    },
+  }
 }
