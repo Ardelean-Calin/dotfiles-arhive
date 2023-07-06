@@ -3,5 +3,6 @@
     "window.titleBarStyle": "custom",
     "editor.fontSize": 16,
     "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace",
-    "editor.fontLigatures": true
+    "editor.fontLigatures": true,
+    "terminal.integrated.defaultProfile.linux": "fish"
 }
