@@ -21,16 +21,18 @@
   # environment.
   home.packages = with pkgs; [
     vscodium
+    gnome.geary
     fira-code
     git
     lazygit
-    neofetch
     # Command-line tools
+    macchina
     mc
     nodejs_18
     brave
     neovim
     rustup
+    cargo-binutils
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.blur-my-shell
@@ -50,23 +52,26 @@
   ];
   
   # Configure my command-line tools.
-  programs.fish = {
+
+  programs.zsh = {
     enable = true;
-    functions = {
-      config = "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $argv";
+    enableAutosuggestions = true;
+    enableCompletion = true;
+    shellAliases = {
+      "config" = "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME";
     };
-    interactiveShellInit = ''
-      set fish_greeting # Disable greeting
-      neofetch
-    '';
+    syntaxHighlighting = {
+      enable = true;
+    };
   };
+
   programs.starship = {
     enable = true;
-    enableFishIntegration = true;
+    enableZshIntegration = true;
     settings = {
       character = {
-        success_symbol = "➜";
-        error_symbol = "➜";
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[➜](bold red)";
       };
     };
   };
@@ -79,11 +84,11 @@
   programs.bat.enable = true;
   programs.zoxide = {
     enable = true;
-    enableFishIntegration = true;
+    enableZshIntegration = true;
   };
   programs.fzf = {
     enable = true;
-    enableFishIntegration = true;
+    enableZshIntegration = true;
   };
 
   dconf.enable = true;
