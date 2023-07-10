@@ -8,21 +8,21 @@ NIX_ROOT="/nix"
 
 echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
-  echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
+	echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
 else
-  sh <(curl -L https://nixos.org/nix/install) --no-daemon
-  . $HOME/.nix-profile/etc/profile.d/nix.sh
+	sh <(curl -L https://nixos.org/nix/install) --no-daemon
+	. $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
 echo -e "${GREEN}Installing Home-Manager...${NC}"
 
-if home-manager --version > /dev/null 2>&1; then
-  echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
+if home-manager --version >/dev/null 2>&1; then
+	echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
 else
-  nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-  nix-channel --update
+	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+	nix-channel --update
 
-  nix-shell '<home-manager>' -A install
+	nix-shell '<home-manager>' -A install
 fi
 
 # Preparation: Get ssh keys
@@ -35,23 +35,23 @@ popd
 
 # Download dotfiles repo
 function config {
-   nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
+	nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
 }
 
 if [ -d "$HOME/.dotfiles" ]; then
-  echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
-  mv $HOME/.dotfiles $HOME/.dotfiles.backup
+	echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
+	mv $HOME/.dotfiles $HOME/.dotfiles.backup
 fi
 nix-shell -p git --run "git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
 # Create dotfiles backup if needed
 mkdir -p $HOME/.config-backup
 config checkout
 if [ $? = 0 ]; then
-  echo "Checked out config.";
-  else
-    echo "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}";
-    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
-fi;
+	echo "Checked out config."
+else
+	echo "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}"
+	config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
+fi
 config checkout
 nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no"
 # config config --local status.showUntrackedFiles no

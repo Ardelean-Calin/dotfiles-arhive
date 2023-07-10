@@ -55,14 +55,18 @@
 
   programs.zsh = {
     enable = true;
+    # defaultKeymap = "emacs";
     enableAutosuggestions = true;
-    enableCompletion = true;
+    syntaxHighlighting.enable = true;
     shellAliases = {
       "config" = "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME";
     };
-    syntaxHighlighting = {
-      enable = true;
-    };
+    zplug.enable = true;
+    zplug.plugins = [
+      { name = "embeddedpenguin/sanekeybinds"; }
+      { name = "zsh-users/zsh-autosuggestions"; }
+      # { name = "marlonrichert/zsh-autocomplete"; }
+    ];
   };
 
   programs.starship = {
@@ -75,6 +79,8 @@
       };
     };
   };
+  
+
   programs.exa = {
     enable = true;
     enableAliases = true;
