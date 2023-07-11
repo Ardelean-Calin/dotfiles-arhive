@@ -67,6 +67,10 @@
       { name = "zsh-users/zsh-autosuggestions"; }
       # { name = "marlonrichert/zsh-autocomplete"; }
     ];
+    initExtra = ''
+    macchina
+    setopt completealiases
+    '';
   };
 
   programs.starship = {
