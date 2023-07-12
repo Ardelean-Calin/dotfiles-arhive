@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -17,22 +17,20 @@
   # release notes.
   home.stateVersion = "23.05"; # Please read the comment before changing.
 
+  nixpkgs.config = {
+    allowUnfree = true;
+  };
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-    vscodium
+    firefox
     gnome.geary
-    fira-code
     git
-    lazygit
-    # Command-line tools
+    delta
     macchina
-    mc
-    nodejs_18
-    brave
-    neovim
-    rustup
-    cargo-binutils
+    # neovim
+    vscodium
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.blur-my-shell
@@ -41,7 +39,7 @@
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
     # # fonts?
-    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" ]; })
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
@@ -50,12 +48,42 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-  
-  # Configure my command-line tools.
 
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    TERMINAL = "kitty";
+  };
+
+  # Configure my command-line tools.
+  programs.bat.enable = true;
+  programs.exa = {
+    enable = true;
+    enableAliases = true;
+  };
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+  programs.lazygit.enable = true;
+  programs.neovim = {
+      enable = true;
+      defaultEditor = true;
+      viAlias = true;
+      vimAlias = true;
+    };
+  programs.ripgrep.enable = true;
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[➜](bold red)";
+      };
+    };
+  };
   programs.zsh = {
     enable = true;
-    # defaultKeymap = "emacs";
     enableAutosuggestions = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
@@ -73,34 +101,6 @@
     '';
   };
 
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-    settings = {
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[➜](bold red)";
-      };
-    };
-  };
-  
-
-  programs.exa = {
-    enable = true;
-    enableAliases = true;
-  };
-  programs.lazygit.enable = true;
-  programs.ripgrep.enable = true;
-  programs.bat.enable = true;
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
   dconf.enable = true;
   dconf.settings = {
     "org/gnome/desktop/wm/preferences" = {
@@ -115,7 +115,6 @@
 
   gtk = {
     enable = true;
-    
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -136,7 +135,6 @@
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
 
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''

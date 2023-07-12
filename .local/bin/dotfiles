@@ -6,6 +6,33 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 NIX_ROOT="/nix"
 
+if [ -f /etc/os-release ]; then
+	# freedesktop.org and systemd
+	. /etc/os-release
+	OS=$ID
+	OS_NAME=$NAME
+	VER=$VERSION_ID
+fi
+
+if [[ -z "${OS}" ]]; then
+	echo "$(tput setaf 1)Error getting distribution. Modify script and try again.$(tput sgr0)"
+	exit
+fi
+
+# Installing prerequisites
+case "$OS" in
+"arch" | "pop" | "ubuntu" | "debian")
+	echo "Detected $(tput setaf 4)$OS_NAME$(tput sgr0)"
+	;;
+*)
+	echo "$(tput setaf 2)Unsupported distribution: ${OS}.$(tput sgr0)"
+	exit
+	;;
+esac
+
+read -n 1 -s -p "Press any key to get started..."
+echo ""
+
 # Install nix in user-mode.
 echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
