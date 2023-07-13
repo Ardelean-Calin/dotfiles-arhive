@@ -1,5 +1,13 @@
 return {
   {
+    "folke/zen-mode.nvim",
+    opts = {
+      window = {
+        width = 180,
+      },
+    },
+  },
+  {
     "simrat39/rust-tools.nvim",
     opts = {
       tools = {
