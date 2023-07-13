@@ -29,8 +29,8 @@
     git
     delta
     macchina
-    # neovim
     vscodium
+    rustup
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.blur-my-shell
