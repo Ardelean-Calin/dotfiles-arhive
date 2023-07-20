@@ -60,7 +60,7 @@ else
 	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 	nix-channel --update
 
-	nix-shell '<home-manager>' -A install --quiet
+	nix-shell '<home-manager>' -A install --quiet > /dev/null
 fi
 
 # Preparation: Get ssh keys
@@ -88,7 +88,7 @@ config checkout
 if [ $? = 0 ]; then
 	echo "Checked out config."
 else
-	echo "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}"
+	echo -e "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}"
 	config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
 fi
 config checkout
@@ -104,11 +104,10 @@ systemctl --user start syncthing.service
 
 echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
 
-read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
-echo    # (optional) move to a new line
-
 # Prompt user for a Yes/No answer.
 while true ; do
+  read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
+  echo    # (optional) move to a new line
   case "$yn" in
     [Yy])
       echo "Rebooting..."
