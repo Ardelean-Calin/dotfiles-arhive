@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ORANGE='\033[0;33m'
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
@@ -20,18 +20,27 @@ if [[ -z "${OS}" ]]; then
 fi
 
 # Installing prerequisites
+echo "Detected $(tput setaf 4)$OS_NAME$(tput sgr0)"
+read -r -n 1 -s -p "Press any key to get started..."
+echo ""
+
 case "$OS" in
-"arch" | "pop" | "ubuntu" | "debian")
-	echo "Detected $(tput setaf 4)$OS_NAME$(tput sgr0)"
+"arch")
+  sudo pacman -Sy --noconfirm kitty
+  ;;
+ "pop" | "ubuntu" | "debian")
+  # kitty
+  curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+  ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
+  cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
+  cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
+
 	;;
 *)
 	echo "$(tput setaf 2)Unsupported distribution: ${OS}.$(tput sgr0)"
 	exit
 	;;
 esac
-
-read -r -n 1 -s -p "Press any key to get started..."
-echo ""
 
 # Install nix in user-mode.
 echo -e "${GREEN}Installing Nix...${NC}"
@@ -91,10 +100,26 @@ home-manager switch
 systemctl --user start syncthing.service
 
 # Install applications
-# kitty
-curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
-cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
-cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
 
 echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
+
+read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
+echo    # (optional) move to a new line
+
+# Prompt user for a Yes/No answer.
+while true ; do
+  case "$yn" in
+    [Yy])
+      echo "Rebooting..."
+      sleep 1
+      sudo reboot now
+      break
+    ;;
+    [Nn])
+      exit
+    ;;
+    *) echo -e "${RED}Invalid option. Please respond with either y or n ${NC}" 
+    ;;
+  esac
+done
+
