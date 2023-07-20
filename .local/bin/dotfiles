@@ -27,7 +27,7 @@ echo ""
 
 case "$OS" in
 "arch")
-  sudo pacman -Sy --noconfirm kitty > /dev/null
+  sudo pacman -Sy --noconfirm kitty
   ;;
  "pop" | "ubuntu" | "debian")
   # kitty
@@ -48,7 +48,7 @@ echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
 	echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
 else
-	sh <(curl -L https://nixos.org/nix/install) --no-daemon > /dev/null
+	sh <(curl -L https://nixos.org/nix/install) --no-daemon
 	. $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
@@ -57,10 +57,10 @@ echo -e "${GREEN}Installing Home-Manager...${NC}"
 if home-manager --version >/dev/null 2>&1; then
 	echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
 else
-	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager > /dev/null
-	nix-channel --update > /dev/null
+	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+	nix-channel --update
 
-	nix-shell '<home-manager>' -A install > /dev/null
+	nix-shell '<home-manager>' -A install
 fi
 
 # Preparation: Get ssh keys
@@ -97,8 +97,7 @@ nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config 
 
 # Final step, run home-manager.
 echo -e "${GREEN}Final step. Running home-manager.${NC}"
-home-manager switch > /dev/null
-echo -e "${GREEN}Starting services.${NC}"
+home-manager switch
 systemctl --user start syncthing.service
 
 # Install applications
