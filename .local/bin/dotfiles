@@ -48,7 +48,7 @@ echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
 	echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
 else
-	sh <(curl -L https://nixos.org/nix/install) --no-daemon
+	sh <(curl -L https://nixos.org/nix/install) --no-daemon --yes
 	. $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
@@ -60,7 +60,7 @@ else
 	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 	nix-channel --update
 
-	nix-shell '<home-manager>' -A install
+	nix-shell '<home-manager>' -A install --quiet
 fi
 
 # Preparation: Get ssh keys
@@ -97,7 +97,7 @@ nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config 
 
 # Final step, run home-manager.
 echo -e "${GREEN}Final step. Running home-manager.${NC}"
-home-manager switch
+home-manager switch > /dev/null
 systemctl --user start syncthing.service
 
 # Install applications
