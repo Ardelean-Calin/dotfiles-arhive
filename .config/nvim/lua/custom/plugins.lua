@@ -31,10 +31,11 @@ local plugins = {
   },
   {
     "williamboman/mason.nvim",
-    opt = {
+    opts = {
       ensure_installed = {
         "stylua", -- lua formatter
         "shfmt", -- bash formatter and styler
+        "shellcheck",
         "lua-language-server",
         "bash-language-server",
         "rust-analyzer",
@@ -42,4 +43,5 @@ local plugins = {
     },
   },
 }
+
 return plugins
