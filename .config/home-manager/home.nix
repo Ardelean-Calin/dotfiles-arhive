@@ -32,6 +32,7 @@
     vscodium
     rustup
     nodejs # Latest LTS version; needed for some nvim plugins
+    cht-sh # Cool little cheatsheets utility. See cheat.sh
     # TODO. How can I make this conditional?
     # gnomeExtensions.dash-to-dock
     # gnomeExtensions.blur-my-shell
@@ -99,6 +100,7 @@
     initExtra = ''
     macchina
     setopt completealiases
+    fpath=(~/.zsh.d/ $fpath)
     '';
   };
 
