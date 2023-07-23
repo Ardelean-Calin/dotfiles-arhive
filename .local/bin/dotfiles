@@ -27,7 +27,7 @@ echo ""
 
 case "$OS" in
 "arch")
-  sudo pacman -Sy --noconfirm kitty
+  sudo pacman -Sy --noconfirm kitty 
   ;;
  "pop" | "ubuntu" | "debian")
   # kitty
@@ -101,7 +101,6 @@ home-manager switch > /dev/null
 systemctl --user start syncthing.service
 
 # Install applications
-
 echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
 
 # Prompt user for a Yes/No answer.
