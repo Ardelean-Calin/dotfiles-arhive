@@ -80,9 +80,25 @@ require("lazy").setup({
       },
     },
   },
-  -- LSP
+  -- Mason. Install LSPs and Linters
   { "williamboman/mason.nvim" },
   { "williamboman/mason-lspconfig.nvim" },
+  {
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "jose-elias-alvarez/null-ls.nvim",
+    },
+    opts = {
+      ensure_installed = {
+        "beautysh",
+        "stylua",
+      },
+      automatic_installation = true,
+    },
+  },
+  -- LSP
   { "neovim/nvim-lspconfig" },
   {
     "folke/neodev.nvim",
