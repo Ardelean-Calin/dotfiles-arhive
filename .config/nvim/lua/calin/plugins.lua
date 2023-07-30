@@ -48,6 +48,7 @@ require("lazy").setup({
   { "lewis6991/gitsigns.nvim", opts = {} },
   {
     "nvim-telescope/telescope.nvim",
+    event = "VeryLazy",
     tag = "0.1.2",
     -- or                              , branch = '0.1.x',
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -69,9 +70,21 @@ require("lazy").setup({
     opts = {},
     -- stylua: ignore
     keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,       desc = "Flash" },
-      { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o",               function() require("flash").remote() end,     desc = "Remote Flash" },
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      {
+        "S",
+        mode = { "n", "o", "x" },
+        function() require("flash").treesitter() end,
+        desc =
+        "Flash Treesitter"
+      },
+      {
+        "r",
+        mode = "o",
+        function() require("flash").remote() end,
+        desc =
+        "Remote Flash"
+      },
       {
         "R",
         mode = { "o", "x" },
@@ -88,24 +101,58 @@ require("lazy").setup({
       },
     },
   },
-  -- Mason. Install LSPs and Linters
-  { "williamboman/mason.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
   {
-    "jay-babu/mason-null-ls.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "williamboman/mason.nvim",
-      "jose-elias-alvarez/null-ls.nvim",
-    },
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    init = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+    end,
     opts = {
-      ensure_installed = {
-        "beautysh",
-        "stylua",
-      },
-      automatic_installation = true,
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
     },
   },
+  {
+    "ThePrimeagen/harpoon",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {},
+  },
+  -- Mason. Install LSPs and Linters
+  {
+    "williamboman/mason.nvim",
+    build = ":MasonUpdate",
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "beautysh",
+        -- "flake8",
+      },
+    },
+    ---@param opts MasonSettings | {ensure_installed: string[]}
+    config = function(_, opts)
+      require("mason").setup(opts)
+      local mr = require("mason-registry")
+      local function ensure_installed()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
+        end
+      end
+      if mr.refresh then
+        mr.refresh(ensure_installed)
+      else
+        ensure_installed()
+      end
+    end,
+  },
+  { "williamboman/mason-lspconfig.nvim" },
   -- LSP
   { "neovim/nvim-lspconfig" },
   {
