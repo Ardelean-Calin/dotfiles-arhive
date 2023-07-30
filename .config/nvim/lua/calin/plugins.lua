@@ -20,25 +20,7 @@ require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      local configs = require("nvim-treesitter.configs")
-
-      configs.setup({
-        ensure_installed = {
-          "bash",
-          "c",
-          "lua",
-          "rust",
-          "vim",
-          "vimdoc",
-          "query",
-          "javascript",
-          "html",
-          "python",
-        },
-        sync_install = false,
-        highlight = { enable = true },
-        indent = { enable = true },
-      })
+      require("calin.plugins.treesitter")
     end,
   },
   {
@@ -55,6 +37,7 @@ require("lazy").setup({
       require("calin.plugins.lualine")
     end,
   },
+  { "lewis6991/gitsigns.nvim", opts = {} },
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.2",
@@ -97,16 +80,10 @@ require("lazy").setup({
       },
     },
   },
-  {
-    "williamboman/mason.nvim",
-    opts = {}, -- required so that the setup() function is called
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    opts = {
-      ensure_installed = { "lua_ls", "rust_analyzer", "bashls" },
-    },
-  },
+  -- LSP
+  { "williamboman/mason.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "neovim/nvim-lspconfig" },
   {
     "folke/neodev.nvim",
     dependencies = {
@@ -114,27 +91,29 @@ require("lazy").setup({
     },
     opts = {},
   },
-  { "simrat39/rust-tools.nvim" },
+  -- Completion engine
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "L3MON4D3/LuaSnip" },
+  { "saadparwaiz1/cmp_luasnip" },
+  { "rafamadriz/friendly-snippets" },
+  -- Formatters
+  -- Some LSPs, such as bashls, do not provide formatting services. This means vim.lsp.buf.format() doesn't work.
+  -- In order to make such LSPs to support formatting, we use null-ls together with a formatter to expose a
+  -- formatting API to Neovims LSP engine. At least that's how I understand it.
   {
-    "VonHeikemen/lsp-zero.nvim",
-    branch = "v2.x",
-    dependencies = {
-      -- LSP Support
-      { "neovim/nvim-lspconfig" },             -- Required
-      { "williamboman/mason.nvim" },           -- Optional
-      { "williamboman/mason-lspconfig.nvim" }, -- Optional
-
-      -- Autocompletion
-      { "hrsh7th/nvim-cmp" },     -- Required
-      { "hrsh7th/cmp-nvim-lsp" }, -- Required
-      { "L3MON4D3/LuaSnip" },     -- Required
-
-      -- snippets
-      { "L3MON4D3/LuaSnip" },
-      { "rafamadriz/friendly-snippets" },
-    },
-    config = function()
-      require("calin.plugins.lsp")
+    "jose-elias-alvarez/null-ls.nvim",
+    opts = function()
+      local null_ls = require("null-ls")
+      return {
+        sources = {
+          null_ls.builtins.formatting.beautysh,
+          null_ls.builtins.formatting.stylua,
+        },
+      }
     end,
   },
 })
+-- Load the LSP configuration
+require("calin.plugins.lsp")
+require("calin.plugins.completions")

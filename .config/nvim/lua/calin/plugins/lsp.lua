@@ -1,55 +1,52 @@
-local lsp = require('lsp-zero').preset({})
-
-lsp.on_attach(function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp.default_keymaps({ buffer = bufnr })
-end)
-
--- (Optional) Configure lua language server for neovim
-require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
--- require('lspconfig').rust_analyzer.setup({})
-lsp.skip_server_setup({ 'rust_analyzer' })
-
-lsp.format_on_save({
-  format_opts = {
-    async = false,
-    timeout_ms = 10000,
-  },
-  servers = {
-    ['lua_ls'] = { 'lua' },
-    ['rust_analyzer'] = { 'rust' },
-    ['bashls'] = { 'bash' },
-    -- if you have a working setup with null-ls
-    -- you can specify filetypes it can format.
-    -- ['null-ls'] = {'javascript', 'typescript'},
-  }
+require("mason").setup()
+require("mason-lspconfig").setup({
+  ensure_installed = { "lua_ls", "rust_analyzer", "bashls" }
 })
 
-lsp.setup()
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
--- Make sure you setup `cmp` after lsp-zero
-local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
+require("lspconfig").lua_ls.setup {
+  capabilities = capabilities
+}
+require("lspconfig").rust_analyzer.setup {
+  capabilities = capabilities
+}
+require("lspconfig").bashls.setup { capabilities = capabilities }
 
-cmp.setup({
-  preselect = 'item',
-  completion = {
-    completeopt = 'menu,menuone,noinsert'
-  },
-  mapping = {
-    ['<Tab>'] = cmp_action.luasnip_supertab(),
-    ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
-    ['<CR>'] = cmp.mapping.confirm({ select = false }),
-    ['<C-Space>'] = cmp.mapping.complete(),
-  }
-})
+-- Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
-local rust_tools = require('rust-tools')
-rust_tools.setup({
-  server = {
-    on_attach = function(_, bufnr)
-      vim.keymap.set('n', '<leader>ca', rust_tools.hover_actions.hover_actions, { buffer = bufnr })
-    end
-  }
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set('n', '<space>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, {})
+    vim.keymap.set('n', '<leader>fm', function()
+      vim.lsp.buf.format { async = true }
+    end, opts)
+  end,
 })
