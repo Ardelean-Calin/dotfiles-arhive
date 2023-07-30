@@ -37,6 +37,14 @@ require("lazy").setup({
       require("calin.plugins.lualine")
     end,
   },
+  {
+    "j-hui/fidget.nvim",
+    tag = "legacy",
+    event = "LspAttach",
+    opts = {
+      -- options
+    },
+  },
   { "lewis6991/gitsigns.nvim", opts = {} },
   {
     "nvim-telescope/telescope.nvim",
