@@ -1,0 +1,18 @@
+{
+    "workspace.library": [
+        "/home/calin/.config/nvim",
+        "/home/calin/.local/share/nvim/lazy/lazy.nvim",
+        "/home/calin/.local/share/nvim/lazy/nvim-lspconfig",
+        "/home/calin/.local/share/nvim/lazy/nvim-web-devicons",
+        "/home/calin/.local/share/nvim/lazy/alpha-nvim",
+        "/home/calin/.local/share/nvim/lazy/mason.nvim",
+        "/home/calin/.local/share/nvim/lazy/nvim-treesitter",
+        "/home/calin/.local/share/nvim/lazy/mini.nvim",
+        "/home/calin/.local/share/nvim/lazy/catppuccin",
+        "/nix/store/ypc27qm8i9vp96yh1wk5aq3giibyi1f4-neovim-unwrapped-0.9.1/share/nvim/runtime",
+        "/nix/store/ypc27qm8i9vp96yh1wk5aq3giibyi1f4-neovim-unwrapped-0.9.1/lib/nvim",
+        "/home/calin/.local/state/nvim/lazy/readme",
+        "/home/calin/.local/share/nvim/lazy/catppuccin/after",
+        "${3rd}/luassert/library"
+    ]
+}
