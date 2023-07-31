@@ -31,6 +31,7 @@ sudo pacman -Sy --needed --noconfirm \
     base-devel \
     kitty \
     zsh \
+    starship \
     rsync \
     git \
     git-delta \
@@ -39,6 +40,7 @@ sudo pacman -Sy --needed --noconfirm \
     fzf \
     bat \
     exa \
+    npm \
     papirus-icon-theme \
     ttf-jetbrains-mono \
     ttf-jetbrains-mono-nerd \
@@ -50,7 +52,7 @@ curl https://sh.rustup.rs -sSf | sh -s -- -y
 # Then install paru
 git clone https://aur.archlinux.org/paru.git /tmp/paru
 pushd /tmp/paru
-makepkg -si
+makepkg -si --noconfirm
 popd
 
 # Lastly, AUR dependencies and Flatpak dependencies
@@ -108,9 +110,8 @@ git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntra
 ############################################################################
 # Setup zsh
 ############################################################################
+# Install zplug
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-curl -sS https://starship.rs/install.sh | sh
-zplug install
 
 ############################################################################
 # Setup other settings such as desktop environment.
