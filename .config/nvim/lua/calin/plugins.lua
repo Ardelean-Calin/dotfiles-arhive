@@ -122,6 +122,10 @@ require("lazy").setup({
     },
     opts = {},
   },
+  {
+    "tpope/vim-fugitive",
+    config = function() end,
+  },
   -- Mason. Install LSPs and Linters
   {
     "williamboman/mason.nvim",

@@ -8,16 +8,16 @@ NC='\033[0m' # No Color
 NIX_ROOT="/nix"
 
 if [ -f /etc/os-release ]; then
-	# freedesktop.org and systemd
-	. /etc/os-release
-	OS=$ID
-	OS_NAME=$NAME
-	VER=$VERSION_ID
+    # freedesktop.org and systemd
+    . /etc/os-release
+    OS=$ID
+    OS_NAME=$NAME
+    VER=$VERSION_ID
 fi
 
 if [[ -z "${OS}" ]]; then
-	echo "$(tput setaf 1)Error getting distribution. Modify script and try again.$(tput sgr0)"
-	exit
+    echo "$(tput setaf 1)Error getting distribution. Modify script and try again.$(tput sgr0)"
+    exit
 fi
 
 # Installing prerequisites
@@ -26,70 +26,70 @@ read -r -n 1 -s -p "Press any key to get started..."
 echo ""
 
 case "$OS" in
-"arch")
-  sudo pacman -Sy --noconfirm kitty 
-  ;;
- "pop" | "ubuntu" | "debian")
-  # kitty
-  curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-  ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
-  cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
-  cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
+    "arch")
+        sudo pacman -Sy --noconfirm kitty
+        ;;
+    "pop" | "ubuntu" | "debian")
+        # kitty
+        curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+        ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
+        cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
+        cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
 
-	;;
-*)
-	echo "$(tput setaf 2)Unsupported distribution: ${OS}.$(tput sgr0)"
-	exit
-	;;
+        ;;
+    *)
+        echo "$(tput setaf 2)Unsupported distribution: ${OS}.$(tput sgr0)"
+        exit
+        ;;
 esac
 
 # Install nix in user-mode.
 echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
-	echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
+    echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
 else
-	sh <(curl -L https://nixos.org/nix/install) --no-daemon --yes
-	. $HOME/.nix-profile/etc/profile.d/nix.sh
+    sh <(curl -L https://nixos.org/nix/install) --no-daemon --yes
+    . $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
 # Install home-manager.
 echo -e "${GREEN}Installing Home-Manager...${NC}"
 if home-manager --version >/dev/null 2>&1; then
-	echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
+    echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
 else
-	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-	nix-channel --update
+    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+    nix-channel --update
 
-	nix-shell '<home-manager>' -A install --quiet > /dev/null
+    nix-shell '<home-manager>' -A install --quiet > /dev/null
 fi
 
 # Preparation: Get ssh keys
 if ! command -v scp &>/dev/null; then
-	echo "scp could not be found. Please install scp and then retry."
-	exit
+    echo "scp could not be found. Please install scp and then retry."
+    exit
 fi
 echo -e "${GREEN}Getting SSH keys...${NC}"
-# Download SSH keys from a local-only machine with scp 
+# Download SSH keys from a local-only machine with scp
 scp dietpi@10.134.6.112:/mnt/dietpi_userdata/secrets/id_ed25519* $HOME/.ssh/
 
 # Download dotfiles repo
 function config {
-	nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
+    nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
 }
 
 if [ -d "$HOME/.dotfiles" ]; then
-	echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
-	mv $HOME/.dotfiles $HOME/.dotfiles.backup
+    echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
+    mv $HOME/.dotfiles $HOME/.dotfiles.backup
 fi
 nix-shell -p git --run "git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
 # Create dotfiles backup if needed
 mkdir -p $HOME/.config-backup
 config checkout
 if [ $? = 0 ]; then
-	echo "Checked out config."
+    echo "Checked out config."
 else
-	echo -e "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}"
-	config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
+    echo -e "Backing up pre-existing dot files to ${YELLOW}$HOME/.config-backup${NC}"
+    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
 fi
 config checkout
 nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no"
@@ -105,20 +105,19 @@ echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
 
 # Prompt user for a Yes/No answer.
 while true ; do
-  read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
-  echo    # (optional) move to a new line
-  case "$yn" in
-    [Yy])
-      echo "Rebooting..."
-      sleep 1
-      sudo reboot now
-      break
-    ;;
-    [Nn])
-      exit
-    ;;
-    *) echo -e "${RED}Invalid option. Please respond with either y or n ${NC}" 
-    ;;
-  esac
+    read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
+    echo    # (optional) move to a new line
+    case "$yn" in
+        [Yy])
+            echo "Rebooting..."
+            sleep 1
+            sudo reboot now
+            break
+            ;;
+        [Nn])
+            exit
+            ;;
+        *) echo -e "${RED}Invalid option. Please respond with either y or n ${NC}"
+            ;;
+    esac
 done
-
