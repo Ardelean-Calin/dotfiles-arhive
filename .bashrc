@@ -12,3 +12,5 @@
 
 test -s ~/.alias && . ~/.alias || true
 alias config='git --git-dir=/home/calin/.dotfiles/ --work-tree=/home/calin'
+source $HOME/.nix-profile/etc/profile.d/nix.sh
+. "$HOME/.cargo/env"

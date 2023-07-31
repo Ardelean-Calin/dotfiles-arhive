@@ -1,0 +1,5 @@
+. "$HOME/.cargo/env"
+export PATH="$HOME/bin:$PATH"
+export EDITOR="nvim"
+export TERMINAL="kitty"
+export BROWSER="firefox"

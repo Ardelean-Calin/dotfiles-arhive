@@ -25,25 +25,40 @@ echo "Detected $(tput setaf 4)$OS_NAME$(tput sgr0)"
 read -r -n 1 -s -p "Press any key to get started..."
 echo ""
 
-case "$OS" in
-    "arch")
-        sudo pacman -Sy --noconfirm kitty
-        ;;
-    "pop" | "ubuntu" | "debian")
-        # kitty
-        curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-        ln -sf ~/.local/kitty.app/bin/kitty ~/.local/kitty.app/bin/kitten ~/.local/bin/
-        cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
-        cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
+# I will only support arch for now.
+# First install all dependencies
+sudo pacman -Sy --needed --noconfirm \
+    base-devel \
+    kitty \
+    zsh \
+    rsync \
+    git \
+    neovim \
+    firefox \
+    fzf \
+    bat \
+    exa \
+    papirus-icon-theme \
+    ttf-jetbrains-mono \
+    ttf-jetbrains-mono-nerd \
+    flatpak
 
-        ;;
-    *)
-        echo "$(tput setaf 2)Unsupported distribution: ${OS}.$(tput sgr0)"
-        exit
-        ;;
-esac
+# Install Rustup
+curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-# Install nix in user-mode.
+# Then install paru
+git clone https://aur.archlinux.org/paru.git /tmp/paru
+pushd /tmp/paru
+makepkg -si
+popd
+
+# Lastly, AUR dependencies and Flatpak dependencies
+paru -Sy --noconfirm adw-gtk3-git
+flatpak install --assumeyes org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
+
+############################################################################
+# Install nix in user-mode.                                                #
+############################################################################
 echo -e "${GREEN}Installing Nix...${NC}"
 if [ -d "$NIX_ROOT" ]; then
     echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
@@ -52,18 +67,9 @@ else
     . $HOME/.nix-profile/etc/profile.d/nix.sh
 fi
 
-# Install home-manager.
-echo -e "${GREEN}Installing Home-Manager...${NC}"
-if home-manager --version >/dev/null 2>&1; then
-    echo -e "${YELLOW}Home-Manager is already installed. Skipping...${NC}"
-else
-    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-    nix-channel --update
-
-    nix-shell '<home-manager>' -A install --quiet > /dev/null
-fi
-
-# Preparation: Get ssh keys
+############################################################################
+# Preparation: Get ssh keys                                                #
+############################################################################
 if ! command -v scp &>/dev/null; then
     echo "scp could not be found. Please install scp and then retry."
     exit
@@ -72,16 +78,19 @@ echo -e "${GREEN}Getting SSH keys...${NC}"
 # Download SSH keys from a local-only machine with scp
 scp dietpi@10.134.6.112:/mnt/dietpi_userdata/secrets/id_ed25519* $HOME/.ssh/
 
+############################################################################
+# Get dotfiles                                                             #
+############################################################################
 # Download dotfiles repo
 function config {
-    nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@"
+    git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
 }
 
 if [ -d "$HOME/.dotfiles" ]; then
     echo "Dotfiles exist, moving to $HOME/.dotfiles.backup"
     mv $HOME/.dotfiles $HOME/.dotfiles.backup
 fi
-nix-shell -p git --run "git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles"
+git clone --bare git@github.com:Ardelean-Calin/dotfiles.git $HOME/.dotfiles
 # Create dotfiles backup if needed
 mkdir -p $HOME/.config-backup
 config checkout
@@ -92,32 +101,24 @@ else
     config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} sh -c 'mkdir -p .config-backup/$(dirname {}) && mv {} .config-backup/{}'
 fi
 config checkout
-nix-shell -p git --run "git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no"
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntrackedFiles no
 # config config --local status.showUntrackedFiles no
 
-# Final step, run home-manager.
-echo -e "${GREEN}Final step. Running home-manager.${NC}"
-home-manager switch > /dev/null
-systemctl --user start syncthing.service
+############################################################################
+# Setup zsh
+############################################################################
+curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+curl -sS https://starship.rs/install.sh | sh
+zplug install
 
-# Install applications
+############################################################################
+# Setup other settings such as desktop environment.
+############################################################################
+echo -e "${GREEN}Setting up Gnome Desktop...${NC}"
+cat $HOME/.settings/dconf-settings.ini | dconf load /
+
+############################################################################
+# Done.
+############################################################################
 echo -e "${GREEN}Done! Dotfiles applied successfully. ${NC}"
-
-# Prompt user for a Yes/No answer.
-while true ; do
-    read -p $(echo -e "${GREEN}A restart is necessary. Would you like to restart? [Y/n] ${NC}") -n 1 -r yn
-    echo    # (optional) move to a new line
-    case "$yn" in
-        [Yy])
-            echo "Rebooting..."
-            sleep 1
-            sudo reboot now
-            break
-            ;;
-        [Nn])
-            exit
-            ;;
-        *) echo -e "${RED}Invalid option. Please respond with either y or n ${NC}"
-            ;;
-    esac
-done
+echo -e "${GREEN}A restart is necessary to apply all settings. ${NC}"
