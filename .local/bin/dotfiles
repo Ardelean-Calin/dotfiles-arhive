@@ -33,6 +33,7 @@ sudo pacman -Sy --needed --noconfirm \
     zsh \
     rsync \
     git \
+    git-delta \
     neovim \
     firefox \
     fzf \

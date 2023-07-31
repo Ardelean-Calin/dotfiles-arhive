@@ -1,5 +1,5 @@
 -- Use CTRL-s to save the current buffer.
-vim.keymap.set("i", "<C-s>", "<ESC>:w<CR>a")
+vim.keymap.set("i", "<C-s>", "<ESC>:w<CR>")
 vim.keymap.set("n", "<C-s>", ":w<CR>")
 
 -- Move selected lines up/down
