@@ -25,6 +25,34 @@ echo "Detected $(tput setaf 4)$OS_NAME$(tput sgr0)"
 read -r -n 1 -s -p "Press any key to get started..."
 echo ""
 
+# First create a btrfs snapshot as a backup.
+sudo btrfs subvolume snapshot / /.snapshots/root-snapshot-initial
+sudo btrfs subvolume snapshot /home /.snapshots/home-snapshot-initial
+
+# Install Gnome Desktop environmen
+# As per Arch wiki:
+# Step 1: Install nvidia driver.
+sudo pacman -Sy --needed --noconfirm \
+    nvidia \
+    nvidia-utils \
+    gnome
+
+# Step 2: Add modeset kernel parameter.
+echo "Adding kernel parameters."
+if command -v bootctl &>/dev/null; then
+    FILE=$(bootctl status | awk '/source:/ {print $2}')
+    # Create a backup first.
+    cp $FILE "${FILE}.bak"
+    grep -qF 'nvidia_drm.modeset=1' $FILE || sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
+else
+    echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'nvidia_drm.modeset=1' to your kernel parameters."
+fi
+
+# On the wiki it says I should remove KMS from the HOOKS array in /etc/mkinitcpio.conf
+# However I don't seem to have that, so it doesn't matter.
+
+sudo systemctl enable gdm.service
+
 # I will only support arch for now.
 # First install all dependencies
 sudo pacman -Sy --needed --noconfirm \
