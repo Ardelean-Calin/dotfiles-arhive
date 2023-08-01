@@ -1,40 +1,43 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
+  vim.fn.system {
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable", -- latest stable release
     lazypath,
-  })
+  }
 end
 vim.opt.rtp:prepend(lazypath)
 
 vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
 
-require("lazy").setup({
-  { "catppuccin/nvim",         name = "catppuccin", priority = 1000 },
+require("lazy").setup {
+  -- Themes
+  { "catppuccin/nvim",    name = "catppuccin", priority = 1000 },
+  { "sainnhe/everforest", name = "everforest", priority = 1000 },
+
   "folke/neodev.nvim",
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      require("calin.plugins.treesitter")
+      require "calin.plugins.treesitter"
     end,
   },
   {
     "goolord/alpha-nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require("calin.plugins.alpha")
+      require "calin.plugins.alpha"
     end,
   },
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     config = function()
-      require("calin.plugins.lualine")
+      require "calin.plugins.lualine"
     end,
   },
   {
@@ -45,7 +48,7 @@ require("lazy").setup({
       -- options
     },
   },
-  { "lewis6991/gitsigns.nvim", opts = {} },
+  { "lewis6991/gitsigns.nvim",          opts = {} },
   {
     "nvim-telescope/telescope.nvim",
     event = "VeryLazy",
@@ -53,14 +56,14 @@ require("lazy").setup({
     -- or                              , branch = '0.1.x',
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("calin.plugins.telescope")
+      require "calin.plugins.telescope"
     end,
   },
   {
     "echasnovski/mini.nvim",
     version = "*",
     config = function()
-      require("calin.plugins.mini")
+      require "calin.plugins.mini"
     end,
   },
   {
@@ -140,7 +143,7 @@ require("lazy").setup({
     ---@param opts MasonSettings | {ensure_installed: string[]}
     config = function(_, opts)
       require("mason").setup(opts)
-      local mr = require("mason-registry")
+      local mr = require "mason-registry"
       local function ensure_installed()
         for _, tool in ipairs(opts.ensure_installed) do
           local p = mr.get_package(tool)
@@ -179,7 +182,7 @@ require("lazy").setup({
   {
     "jose-elias-alvarez/null-ls.nvim",
     opts = function()
-      local null_ls = require("null-ls")
+      local null_ls = require "null-ls"
       return {
         sources = {
           null_ls.builtins.formatting.beautysh,
@@ -188,7 +191,7 @@ require("lazy").setup({
       }
     end,
   },
-})
+}
 -- Load the LSP configuration
-require("calin.plugins.lsp")
-require("calin.plugins.completions")
+require "calin.plugins.lsp"
+require "calin.plugins.completions"
