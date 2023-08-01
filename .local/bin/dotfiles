@@ -35,6 +35,8 @@ sudo btrfs subvolume snapshot /home /.snapshots/home-snapshot-initial
 sudo pacman -Sy --needed --noconfirm \
     nvidia \
     nvidia-utils \
+    usbutils \
+    networkmanager \
     gnome
 
 # Step 2: Add modeset kernel parameter.
@@ -42,8 +44,8 @@ echo "Adding kernel parameters."
 if command -v bootctl &>/dev/null; then
     FILE=$(bootctl status | awk '/source:/ {print $2}')
     # Create a backup first.
-    cp $FILE "${FILE}.bak"
-    grep -qF 'nvidia_drm.modeset=1' $FILE || sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
+    sudo cp $FILE "${FILE}.bak"
+    grep -qF 'nvidia_drm.modeset=1' $FILE || sudo sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
 else
     echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'nvidia_drm.modeset=1' to your kernel parameters."
 fi
@@ -69,6 +71,8 @@ sudo pacman -Sy --needed --noconfirm \
     bat \
     exa \
     npm \
+    xclip \
+    nix \
     papirus-icon-theme \
     ttf-jetbrains-mono \
     ttf-jetbrains-mono-nerd \
@@ -86,17 +90,6 @@ popd
 # Lastly, AUR dependencies and Flatpak dependencies
 paru -Sy --noconfirm adw-gtk3-git
 flatpak install --assumeyes org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
-
-############################################################################
-# Install nix in user-mode.                                                #
-############################################################################
-echo -e "${GREEN}Installing Nix...${NC}"
-if [ -d "$NIX_ROOT" ]; then
-    echo -e "${YELLOW}Nix is already installed. Skipping...${NC}"
-else
-    sh <(curl -L https://nixos.org/nix/install) --no-daemon --yes
-    . $HOME/.nix-profile/etc/profile.d/nix.sh
-fi
 
 ############################################################################
 # Preparation: Get ssh keys                                                #
@@ -146,6 +139,7 @@ curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/instal
 ############################################################################
 echo -e "${GREEN}Setting up Gnome Desktop...${NC}"
 cat $HOME/.settings/dconf-settings.ini | dconf load /
+sudo systemctl enable NetworkManager.service
 
 ############################################################################
 # Done.
