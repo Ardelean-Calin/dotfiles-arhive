@@ -41,16 +41,16 @@ sudo pacman -S --needed --noconfirm \
     gnome
 
 # Step 2: Add modeset kernel parameter.
-echo "Adding kernel parameters."
-if command -v bootctl &>/dev/null; then
-    FILE=$(bootctl status | awk '/source:/ {print $2}')
-    # Create a backup first.
-    sudo cp $FILE "${FILE}.bak"
-    # Only add the kernel parameter if it doesn't exist
-    grep -qF 'nvidia_drm.modeset=1' $FILE || sudo sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
-else
-    echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'nvidia_drm.modeset=1' to your kernel parameters."
-fi
+# echo "Adding kernel parameters."
+# if command -v bootctl &>/dev/null; then
+#     FILE=$(bootctl status | awk '/source:/ {print $2}')
+#     # Create a backup first.
+#     sudo cp $FILE "${FILE}.bak"
+#     # Only add the kernel parameter if it doesn't exist
+#     grep -qF 'nvidia_drm.modeset=1' $FILE || sudo sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
+# else
+#     echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'nvidia_drm.modeset=1' to your kernel parameters."
+# fi
 
 # On the wiki it says I should remove KMS from the HOOKS array in /etc/mkinitcpio.conf
 # However I don't seem to have that, so it doesn't matter.
