@@ -45,6 +45,7 @@ if command -v bootctl &>/dev/null; then
     FILE=$(bootctl status | awk '/source:/ {print $2}')
     # Create a backup first.
     sudo cp $FILE "${FILE}.bak"
+    # Only add the kernel parameter if it doesn't exist
     grep -qF 'nvidia_drm.modeset=1' $FILE || sudo sed -i '$s/$/ nvidia_drm.modeset=1/' $FILE
 else
     echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'nvidia_drm.modeset=1' to your kernel parameters."
@@ -73,6 +74,7 @@ sudo pacman -Sy --needed --noconfirm \
     npm \
     xclip \
     nix \
+    man \
     papirus-icon-theme \
     ttf-jetbrains-mono \
     ttf-jetbrains-mono-nerd \
@@ -135,11 +137,16 @@ git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME config --local status.showUntra
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
 ############################################################################
-# Setup other settings such as desktop environment.
+# Setup other settings such as desktop environment and user permissions
 ############################################################################
 echo -e "${GREEN}Setting up Gnome Desktop...${NC}"
 cat $HOME/.settings/dconf-settings.ini | dconf load /
 sudo systemctl enable NetworkManager.service
+sudo systemctl enable nix-daemon.service
+sudo usermod -aG nix-users calin
+# Add the unstable nix channel
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+nix-channel --update
 
 ############################################################################
 # Done.
