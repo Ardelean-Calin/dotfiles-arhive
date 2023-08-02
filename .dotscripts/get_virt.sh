@@ -65,10 +65,12 @@ fi
 
 # Isolate the GPU and load VFIO early.
 echo "Adding VFIO PCI IDs."
-cat <<EOT > /etc/modprobe.d/vfio.conf
-softdep drm pre: vfio-pci
-options vfio-pci ids=10de:2488,10de:228b"
-EOT
+sudo bash -c 'cat <<EOF > /etc/modprobe.d/vfio.conf
+softdep nvidia pre: vfio-pci
+options vfio-pci ids=10de:2488,10de:228b
+EOF'
+# Regenerate initramfs
+sudo mkinitcpio -P
 # TODO. Any operation needs to be trancendental aka. only run if operation would change something.
 
 echo "Adding user to groups."
@@ -90,34 +92,15 @@ if [ ! -f "/usr/share/vgabios/rtx3070-patched.rom" ]; then
     sudo chown $(whoami):$(whoami) /usr/share/vgabios/rtx3070-patched.rom
 fi
 
-echo "Installing hooks."
-if [ ! -f "/etc/libvirt/hooks/qemu" ]; then
-    sudo mkdir -p /etc/libvirt/hooks
-    sudo cp $HOME/.libvirt/hooks/qemu /etc/libvirt/hooks/qemu
-    sudo chmod +x /etc/libvirt/hooks/qemu
-fi
-
-if [ ! -f "/etc/libvirt/hooks/qemu.d/win11/prepare/begin/start.sh" ]; then
-    sudo mkdir -p /etc/libvirt/hooks/qemu.d/win11/prepare/begin/
-    sudo cp $HOME/.libvirt/hooks/qemu.d/win11/prepare/begin/start.sh /etc/libvirt/hooks/qemu.d/win11/prepare/begin/start.sh
-    sudo chmod +x /etc/libvirt/hooks/qemu.d/win11/prepare/begin/start.sh
-fi
-
-if [ ! -f "/etc/libvirt/hooks/qemu.d/win11/release/end/stop.sh" ]; then
-    sudo mkdir -p /etc/libvirt/hooks/qemu.d/win11/release/end/
-    sudo cp $HOME/.libvirt/hooks/qemu.d/win11/release/end/stop.sh /etc/libvirt/hooks/qemu.d/win11/release/end/stop.sh
-    sudo chmod +x /etc/libvirt/hooks/qemu.d/win11/release/end/stop.sh
-fi
-
-echo "Getting the latest images..."
-mkdir -p "$HOME"/.libvirt/images/
-rsync -razvhP dietpi@10.134.6.112:/mnt/hdd/data/VMs/ "$HOME"/.libvirt/images
-
-echo "Defining Windows 11 virtual machine."
-sudo virsh define $HOME/.libvirt/win11.xml
-echo "Defining Arch virtual machine."
-sudo virsh define $HOME/.libvirt/arch.xml
-
+# echo "Getting the latest images..."
+# mkdir -p "$HOME"/.libvirt/images/
+# rsync -razvhP dietpi@10.134.6.112:/mnt/hdd/data/VMs/ "$HOME"/.libvirt/images
+#
+# echo "Defining Windows 11 virtual machine."
+# sudo virsh define $HOME/.libvirt/win11.xml
+# echo "Defining Arch virtual machine."
+# sudo virsh define $HOME/.libvirt/arch.xml
+#
 # It's better to have the service files in here rather then my dotfiles
 # This way, if I introduce a change I don't have to edit in two places
 # echo "Enabling image backup service."
