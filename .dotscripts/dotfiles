@@ -28,11 +28,12 @@ echo ""
 # First create a btrfs snapshot as a backup.
 sudo btrfs subvolume snapshot / /.snapshots/root-snapshot-initial
 sudo btrfs subvolume snapshot /home /.snapshots/home-snapshot-initial
-
-# Install Gnome Desktop environmen
+# Step 0, synchronize repos
+sudo pacman -Syy
+# Install Gnome Desktop environment
 # As per Arch wiki:
 # Step 1: Install nvidia driver.
-sudo pacman -Sy --needed --noconfirm \
+sudo pacman -S --needed --noconfirm \
     nvidia \
     nvidia-utils \
     usbutils \
@@ -58,10 +59,10 @@ sudo systemctl enable gdm.service
 
 # I will only support arch for now.
 # First install all dependencies
-sudo pacman -Sy --needed --noconfirm \
+sudo pacman -S --needed --noconfirm \
     base-devel \
     kitty \
-    zsh \
+    fish \
     starship \
     rsync \
     git \
@@ -90,7 +91,7 @@ makepkg -si --noconfirm
 popd
 
 # Lastly, AUR dependencies and Flatpak dependencies
-paru -Sy --noconfirm adw-gtk3-git
+paru -S --noconfirm adw-gtk3-git
 flatpak install --assumeyes org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
 
 ############################################################################
