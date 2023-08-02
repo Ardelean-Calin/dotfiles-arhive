@@ -59,6 +59,7 @@ if command -v bootctl &>/dev/null; then
     # Only add the kernel parameter if it doesn't exist
     grep -qF 'amd_iommu=on' $FILE || sudo sed -i '$s/$/ amd_iommu=on/' $FILE
     grep -qF 'iommu=pt' $FILE || sudo sed -i '$s/$/ iommu=pt/' $FILE
+    grep -qF 'vfio-pci.ids' $FILE || sudo sed -i '$s/$/ vfio-pci.ids=10de:2488,10de:228b' $FILE
 else
     echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'amd_iommu=on iommu=pt' to your kernel parameters."
 fi
@@ -66,8 +67,8 @@ fi
 # Isolate the GPU and load VFIO early.
 echo "Adding VFIO PCI IDs."
 sudo bash -c 'cat <<EOF > /etc/modprobe.d/vfio.conf
+softdep drm pre: vfio-pci
 softdep nvidia pre: vfio-pci
-options vfio-pci ids=10de:2488,10de:228b
 EOF'
 # Regenerate initramfs
 sudo mkinitcpio -P
@@ -77,8 +78,10 @@ echo "Adding user to groups."
 sudo usermod -aG kvm,input,libvirt calin
 
 echo "Configuring libvirtd."
-sudo cp -f $HOME/.libvirt/config/qemu.conf /etc/libvirt/qemu.conf
-sudo cp -f $HOME/.libvirt/config/libvirtd.conf /etc/libvirt/libvirtd.conf
+sudo sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/g' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/g' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/#user = "root"/user = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
+sudo sed -i 's/#group = "root"/group = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
 
 echo "Enabling libvirtd."
 sudo systemctl enable --now libvirtd
@@ -92,14 +95,14 @@ if [ ! -f "/usr/share/vgabios/rtx3070-patched.rom" ]; then
     sudo chown $(whoami):$(whoami) /usr/share/vgabios/rtx3070-patched.rom
 fi
 
-# echo "Getting the latest images..."
-# mkdir -p "$HOME"/.libvirt/images/
-# rsync -razvhP dietpi@10.134.6.112:/mnt/hdd/data/VMs/ "$HOME"/.libvirt/images
-#
-# echo "Defining Windows 11 virtual machine."
-# sudo virsh define $HOME/.libvirt/win11.xml
-# echo "Defining Arch virtual machine."
-# sudo virsh define $HOME/.libvirt/arch.xml
+echo "Getting the latest images..."
+mkdir -p "$HOME"/.libvirt/images/
+rsync -razvhP dietpi@10.134.6.112:/mnt/hdd/data/VMs/ "$HOME"/.libvirt/images
+
+echo "Defining Windows 11 virtual machine."
+sudo virsh define $HOME/.libvirt/win11.xml
+echo "Defining Arch virtual machine."
+sudo virsh define $HOME/.libvirt/arch.xml
 #
 # It's better to have the service files in here rather then my dotfiles
 # This way, if I introduce a change I don't have to edit in two places
