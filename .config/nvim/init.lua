@@ -1,5 +1,3 @@
-require('calin.plugins')
-require('calin.settings')
-require('calin.keybinds')
-require('calin.mappings')
-require("calin.autocmds")
+require "options"
+require "plugins"
+require "mappings"
