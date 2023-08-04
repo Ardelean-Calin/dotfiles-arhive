@@ -79,6 +79,7 @@ sudo pacman -S --needed --noconfirm \
     papirus-icon-theme \
     ttf-jetbrains-mono \
     ttf-jetbrains-mono-nerd \
+    zig \
     flatpak
 
 # Install Rustup
