@@ -59,7 +59,7 @@ if command -v bootctl &>/dev/null; then
     # Only add the kernel parameter if it doesn't exist
     grep -qF 'amd_iommu=on' $FILE || sudo sed -i '$s/$/ amd_iommu=on/' $FILE
     grep -qF 'iommu=pt' $FILE || sudo sed -i '$s/$/ iommu=pt/' $FILE
-    grep -qF 'vfio-pci.ids' $FILE || sudo sed -i '$s/$/ vfio-pci.ids=10de:2488,10de:228b' $FILE
+    grep -qF 'vfio-pci.ids' $FILE || sudo sed -i '$s/$/ vfio-pci.ids=10de:2488,10de:228b/' $FILE
 else
     echo "Only systemd-boot is supported. If you are running GRUB2 or something else, please add 'amd_iommu=on iommu=pt' to your kernel parameters."
 fi
@@ -78,10 +78,10 @@ echo "Adding user to groups."
 sudo usermod -aG kvm,input,libvirt calin
 
 echo "Configuring libvirtd."
-sudo sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/g' /etc/libvirt/libvirtd.conf
-sudo sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/g' /etc/libvirt/libvirtd.conf
-sudo sed -i 's/#user = "root"/user = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
-sudo sed -i 's/#group = "root"/group = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
+sudo sed -i 's/^#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/g' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/^#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/g' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/^#user = ".*"/user = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
+sudo sed -i 's/^#group = ".*"/group = "'$(whoami)'"/g' /etc/libvirt/qemu.conf
 
 echo "Enabling libvirtd."
 sudo systemctl enable --now libvirtd
