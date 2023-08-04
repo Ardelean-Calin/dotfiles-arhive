@@ -20,3 +20,6 @@ vim.o.updatetime = 300
 vim.o.termguicolors = true
 
 vim.o.mouse = "a"
+
+-- Autocommands
+vim.cmd([[autocmd BufNewFile,BufRead *.service* set ft=systemd]])

@@ -120,6 +120,7 @@ return {
   },
 
   "jose-elias-alvarez/null-ls.nvim",
+  "ziglang/zig.vim", -- Zig language support
 
   -- Miscellaneous plugins
   "echasnovski/mini.nvim",

@@ -1,8 +1,14 @@
 local lsp_formatting = function(bufnr)
   vim.lsp.buf.format({
     filter = function(client)
-      -- apply whatever logic you want (in this example, we'll only use null-ls)
-      return client.name == "null-ls"
+      -- We'll only use null-ls in case of lua, so that we use the better formatter: "stylua"
+      -- Otherwise we just use the built-in formatter of the LSP
+      local filetype = vim.api.nvim_buf_get_option(0, "filetype")
+      if filetype == "lua" then
+        return client.name == "null-ls"
+      else
+        return client.name ~= "null-ls"
+      end
     end,
     bufnr = bufnr,
   })
@@ -31,6 +37,7 @@ local on_attach = function(client, bufnr)
 
   vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
     lsp_formatting(bufnr)
+    -- vim.lsp.buf.format({ async = false })
   end, {})
 
   if client.supports_method("textDocument/formatting") then
@@ -40,6 +47,7 @@ local on_attach = function(client, bufnr)
       buffer = bufnr,
       callback = function()
         lsp_formatting(bufnr)
+        -- vim.lsp.buf.format({ async = false })
       end,
     })
   end
@@ -71,7 +79,7 @@ local handlers = {
 }
 require("mason").setup()
 require("mason-lspconfig").setup({
-  ensure_installed = { "lua_ls", "rust_analyzer", "bashls", "clangd" },
+  ensure_installed = { "lua_ls", "rust_analyzer", "bashls", "clangd", "zls" },
   automatic_installation = true,
   handlers = handlers,
 })
