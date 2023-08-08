@@ -3,8 +3,26 @@ return {
   {
     "ellisonleao/gruvbox.nvim",
     priority = 1000,
+    -- config = function()
+    --   vim.cmd("colorscheme gruvbox")
+    -- end,
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    opts = {
+      flavour = "mocha",
+    },
     config = function()
-      vim.cmd("colorscheme gruvbox")
+      vim.cmd("colorscheme catppuccin")
+    end,
+  },
+  {
+    "rcarriga/nvim-notify",
+    opts = {},
+    config = function()
+      vim.notify = require("notify")
     end,
   },
 
@@ -102,7 +120,9 @@ return {
     end,
   },
   "williamboman/mason-lspconfig.nvim",
-  "neovim/nvim-lspconfig",
+  {
+    "neovim/nvim-lspconfig",
+  },
   "folke/neodev.nvim", -- new
   {
     "hrsh7th/nvim-cmp",
