@@ -63,7 +63,7 @@ sudo pacman -S --needed --noconfirm \
     base-devel \
     kitty \
     fish \
-    starship \
+    fisher \
     rsync \
     git \
     git-delta \
