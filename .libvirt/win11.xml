@@ -125,6 +125,15 @@
       <target chassis="14" port="0x1d"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x5"/>
     </controller>
+    <controller type="pci" index="15" model="pcie-root-port">
+      <model name="pcie-root-port"/>
+      <target chassis="15" port="0x8"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x0"/>
+    </controller>
+    <controller type="pci" index="16" model="pcie-to-pci-bridge">
+      <model name="pcie-pci-bridge"/>
+      <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
+    </controller>
     <controller type="sata" index="0">
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
     </controller>
@@ -145,18 +154,27 @@
     <console type="pty">
       <target type="serial" port="0"/>
     </console>
-    <input type="tablet" bus="usb">
-      <address type="usb" bus="0" port="3"/>
+    <input type="mouse" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
+    </input>
+    <input type="keyboard" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
     </input>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
     <tpm model="tpm-crb">
       <backend type="emulator" version="2.0"/>
     </tpm>
+    <graphics type="spice" port="-1" autoport="no">
+      <listen type="address"/>
+    </graphics>
     <sound model="ich9">
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1b" function="0x0"/>
     </sound>
     <audio id="1" type="none"/>
+    <video>
+      <model type="none"/>
+    </video>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x10" slot="0x00" function="0x0"/>
@@ -172,9 +190,12 @@
       <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
     </hostdev>
     <watchdog model="itco" action="reset"/>
-    <memballoon model="virtio">
-      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
-    </memballoon>
+    <memballoon model="none"/>
+    <shmem name="looking-glass">
+      <model type="ivshmem-plain"/>
+      <size unit="M">128</size>
+      <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
+    </shmem>
   </devices>
 </domain>
 
